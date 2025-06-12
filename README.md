@@ -4,7 +4,7 @@
 
 ## 🚀 Descarga
 
-Descarga la última versión directamente desde la sección de [lanzamientos](https://github.com/tuusuario/true-post/releases/latest).
+Descarga la última versión directamente desde la sección de [lanzamientos](https://github.com/LongLeafGit/true-post-app/releases/latest).
 
 ## 🚩 ¿Por qué True Post?
 
