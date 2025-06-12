@@ -13,7 +13,7 @@ import com.lithium.truepost.ui.theme.TruePostTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        //enableEdgeToEdge()
         setContent {
             TruePostTheme {
                 Surface(

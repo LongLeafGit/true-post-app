@@ -1,6 +1,5 @@
 package com.lithium.truepost.ui.menu.component
 
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,25 +20,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lithium.truepost.R
+import com.lithium.truepost.data.model.CourseData
 import com.lithium.truepost.ui.theme.TruePostTheme
-
-data class TempCourse(
-    @DrawableRes val imageResId: Int,
-    val title: String,
-    val description: String,
-    val completed: Boolean = false,
-)
 
 @Composable
 fun CourseSelector(
-    course: TempCourse,
+    course: CourseData,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -90,10 +82,12 @@ fun CourseSelector(
 fun CourseSelectorPreview() {
     TruePostTheme {
         CourseSelector(
-            course = TempCourse(
+            course = CourseData(
+                id = 0,
                 imageResId = R.drawable.bot,
                 title = "¿Qué son los bots sociales?",
                 description = "Aprende que son los bots y por que son sociales.",
+                content = emptyList(),
             ),
             onClick = {},
         )
@@ -105,11 +99,13 @@ fun CourseSelectorPreview() {
 fun CourseSelectorPreviewCompleted() {
     TruePostTheme {
         CourseSelector(
-            course = TempCourse(
+            course = CourseData(
+                id = 0,
                 imageResId = R.drawable.bot,
                 title = "¿Qué son los bots sociales?",
                 description = "Aprende que son los bots y por que son sociales.",
                 completed = true,
+                content = emptyList(),
             ),
             onClick = {},
         )

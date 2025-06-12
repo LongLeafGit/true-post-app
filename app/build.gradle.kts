@@ -1,14 +1,29 @@
+import java.util.Properties
+
+// Leer local.properties
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(localPropertiesFile.inputStream())
+}
+val supabaseKey: String = localProperties.getProperty("supabaseKey", "")
+val supabaseUrl: String = localProperties.getProperty("supabaseUrl", "")
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-
-    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.0"
+    id("com.google.devtools.ksp") version "2.0.21-1.0.27"
+    kotlin("plugin.serialization") version "2.0.21"
 }
 
 android {
     namespace = "com.lithium.truepost"
     compileSdk = 35
+
+    buildFeatures {
+        buildConfig = true
+    }
 
     defaultConfig {
         applicationId = "com.lithium.truepost"
@@ -16,11 +31,14 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
+
+        buildConfigField("String", "SUPABASE_KEY", "\"$supabaseKey\"")
+        buildConfigField("String", "SUPABASE_URL", "\"$supabaseUrl\"")
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -41,33 +59,26 @@ android {
 }
 
 dependencies {
-    // Dependencias de AndroidX y Compose
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose")
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
-    implementation(libs.androidx.material.icons.extended)
-    implementation(libs.androidx.navigation.runtime.android)
-    implementation(libs.androidx.navigation.compose.jvmstubs)
-
-    // Ktor para interactuar con Supabase
-    implementation("io.ktor:ktor-client-core:2.1.0") // Cliente Ktor
-    implementation("io.ktor:ktor-client-cio:2.1.0") // CIO (cliente HTTP)
-    implementation("io.ktor:ktor-client-content-negotiation:2.1.0") // Para la negociación de contenido (serialización)
-    implementation("io.ktor:ktor-serialization-kotlinx-json:2.1.0") // Para usar kotlinx.serialization con Ktor
+    implementation(platform("androidx.compose:compose-bom:2024.12.01"))
+    implementation("androidx.activity:activity-compose:1.9.3")
+    implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.material:material-icons-extended")
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.ui:ui-tooling")
+    implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
+    implementation("androidx.navigation:navigation-compose:2.8.5")
 
     // Kotlin Serialization
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0")
-    implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.room.ktx)
-    implementation(libs.androidx.room.compiler) // La versión correcta de Kotlinx Serialization
+    val room_version = "2.7.1"
+    implementation("androidx.room:room-runtime:$room_version")
+    ksp("androidx.room:room-compiler:$room_version")
 
-    // Dependencias para pruebas
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
+    // Supabase
+    implementation("io.github.jan-tennert.supabase:gotrue-kt:1.3.2")
+    implementation("io.github.jan-tennert.supabase:postgrest-kt:1.3.2")
+    implementation("io.ktor:ktor-client-cio:2.3.4")
+
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose")
 }

@@ -73,7 +73,6 @@ private fun XTweetHeader(
     modifier: Modifier = Modifier,
 ) {
     Row(
-        verticalAlignment = Alignment.CenterVertically,
         modifier = modifier.fillMaxWidth(),
     ) {
         Text(

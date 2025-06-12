@@ -29,11 +29,50 @@ fun RegisterScreen(
     val focusManager = LocalFocusManager.current
 
     val firstnameError = !viewModel.isFirstnameValid()
-    val lastnameError = !viewModel.isLastnameValid()
     val emailError = !viewModel.isEmailValid()
     val passwordError = !viewModel.isPasswordValid()
     val confirmError = !viewModel.isConfirmPValid()
 
+    LaunchedEffect(uiState.registrationSuccess) {
+        if (uiState.registrationSuccess) {
+            onRegisterSuccess()
+        }
+    }
+
+    RegisterScreenContent(
+        uiState = uiState,
+        firstnameError = firstnameError,
+        emailError = emailError,
+        passwordError = passwordError,
+        confirmError = confirmError,
+        onFirstnameChange = { viewModel.onStateChange(firstname = it) },
+        onEmailChange = { viewModel.onStateChange(email = it) },
+        onPasswordChange = { viewModel.onStateChange(password = it) },
+        onConfirmChange = { viewModel.onStateChange(confirmP = it) },
+        onRegister = {
+            focusManager.clearFocus()
+            if (!firstnameError && !emailError && !passwordError && !confirmError && !uiState.isLoading) {
+                viewModel.register()
+            }
+        },
+        onBackToLogin = onBackToLogin
+    )
+}
+
+@Composable
+fun RegisterScreenContent(
+    uiState: RegisterUiState,
+    firstnameError: Boolean,
+    emailError: Boolean,
+    passwordError: Boolean,
+    confirmError: Boolean,
+    onFirstnameChange: (String) -> Unit,
+    onEmailChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onConfirmChange: (String) -> Unit,
+    onRegister: () -> Unit,
+    onBackToLogin: () -> Unit
+) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier.fillMaxSize()
@@ -52,7 +91,7 @@ fun RegisterScreen(
 
                 PlainTextField(
                     value = uiState.firstname,
-                    onValueChange = { viewModel.onStateChange(firstname = it) },
+                    onValueChange = onFirstnameChange,
                     label = "Nombre(s)",
                     isError = firstnameError,
                     errorMessage = "Campo requerido",
@@ -61,18 +100,8 @@ fun RegisterScreen(
                 )
 
                 PlainTextField(
-                    value = uiState.lastname,
-                    onValueChange = { viewModel.onStateChange(lastname = it) },
-                    label = "Apellidos",
-                    isError = lastnameError,
-                    errorMessage = "Campo requerido",
-                    leadingIcon = Icons.Outlined.Person,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                PlainTextField(
                     value = uiState.email,
-                    onValueChange = { viewModel.onStateChange(email = it) },
+                    onValueChange = onEmailChange,
                     label = "Correo electrónico",
                     isError = emailError,
                     errorMessage = "Correo inválido",
@@ -82,16 +111,16 @@ fun RegisterScreen(
 
                 SecretTextField(
                     secret = uiState.password,
-                    onSecretChange = { viewModel.onStateChange(password = it) },
+                    onSecretChange = onPasswordChange,
                     label = "Contraseña",
                     isError = passwordError,
-                    errorMessage = "Debe tener al menos 8 caracteres",
+                    errorMessage = "Debe tener al menos 8 caracteres, una minúscula, una mayúscula, un número y un símbolo",
                     modifier = Modifier.fillMaxWidth()
                 )
 
                 SecretTextField(
                     secret = uiState.confirmP,
-                    onSecretChange = { viewModel.onStateChange(confirmP = it) },
+                    onSecretChange = onConfirmChange,
                     label = "Confirmar contraseña",
                     isError = confirmError,
                     errorMessage = "Las contraseñas no coinciden",
@@ -100,15 +129,22 @@ fun RegisterScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
+                if (uiState.isLoading) {
+                    CircularProgressIndicator(modifier = Modifier.padding(8.dp))
+                }
+
+                uiState.error?.let {
+                    Text(
+                        text = it,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                }
+
                 ElevatedButton(
-                    onClick = {
-                        focusManager.clearFocus()
-                        if (!firstnameError && !lastnameError && !emailError && !passwordError && !confirmError) {
-                            if (viewModel.register()) {
-                                onRegisterSuccess()
-                            }
-                        }
-                    },
+                    onClick = onRegister,
+                    enabled = !firstnameError && !emailError && !passwordError && !confirmError && !uiState.isLoading,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.secondaryContainer,
                         contentColor = MaterialTheme.colorScheme.onSecondaryContainer
@@ -141,10 +177,26 @@ fun RegisterScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun RegisterScreenPreview() {
+fun RegisterScreenContentPreview() {
     MaterialTheme {
-        RegisterScreen(
-            onRegisterSuccess = {},
+        RegisterScreenContent(
+            uiState = RegisterUiState(
+                firstname = "Ejemplo",
+                email = "ejemplo@mail.com",
+                password = "12345678",
+                confirmP = "12345678",
+                isLoading = false,
+                error = null
+            ),
+            firstnameError = false,
+            emailError = false,
+            passwordError = false,
+            confirmError = false,
+            onFirstnameChange = {},
+            onEmailChange = {},
+            onPasswordChange = {},
+            onConfirmChange = {},
+            onRegister = {},
             onBackToLogin = {}
         )
     }

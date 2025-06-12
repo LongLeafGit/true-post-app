@@ -8,20 +8,18 @@ import com.lithium.truepost.data.raw.AllCourses
 class CourseRepository(
     private val dao: CourseProgressDao,
 ) {
-    private val baseCourses = AllCourses
+    private val courses = AllCourses
 
     suspend fun getCourses(): List<CourseData> {
         val progressList = dao.getAllProgress()
-        val progressMap = progressList.associateBy { it.courseId }
-
+        val baseCourses = courses
         return baseCourses.map { course ->
-            course.copy(
-                completed = progressMap[course.id]?.completed ?: false
-            )
+            val completed = progressList.any { it.courseId == course.id && it.completed }
+            course.copy(completed = completed)
         }
     }
 
-    suspend fun markCourseCompleted(courseId: String) {
-        dao.insertOrUpdate(CourseProgressEntity(courseId, completed = true))
+    suspend fun markCourseCompleted(courseId: Int) {
+        dao.insertOrUpdate(CourseProgressEntity(courseId = courseId, completed = true))
     }
 }

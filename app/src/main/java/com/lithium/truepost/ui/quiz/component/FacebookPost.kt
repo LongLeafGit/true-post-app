@@ -9,13 +9,17 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Favorite
@@ -44,17 +48,15 @@ fun FacebookPost(
     post: FacebookPostModel,
     modifier: Modifier = Modifier,
 ) {
-    Card {
-        Column(
-            modifier = modifier
-        ) {
-            FaceBookPostHeader(post, modifier = Modifier.padding(8.dp))
+    Card(modifier = modifier) {
+        Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
+            FaceBookPostHeader(post)
             HighlightLinkText(
                 text = post.content,
-                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                modifier = Modifier.padding(vertical = 4.dp)
             )
             FacebookImageGrid(post.imagesResId)
-            FaceBookPostFooter(post, modifier = Modifier.padding(8.dp))
+            FaceBookPostFooter(post)
         }
     }
 }
@@ -108,13 +110,15 @@ fun FacebookImageGrid(
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(min(images.size, 3)),
-        modifier = modifier,
+        userScrollEnabled = false,
+        modifier = modifier
+            .fillMaxWidth()
     ) {
         items(images) { imageResId ->
             Image(
                 painter = painterResource(imageResId),
                 contentDescription = null,
-                contentScale = ContentScale.Crop,
+                contentScale = ContentScale.Fit,
                 modifier = Modifier
                     .aspectRatio(1f)
                     .padding(1.dp)

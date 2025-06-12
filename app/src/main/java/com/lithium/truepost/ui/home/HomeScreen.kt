@@ -14,20 +14,47 @@ import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.lithium.truepost.R
+import com.lithium.truepost.ui.TruePostViewModelProvider
+import com.lithium.truepost.ui.session.SessionViewModel
 import com.lithium.truepost.ui.theme.TruePostTheme
+import androidx.compose.runtime.getValue
 
 @Composable
 fun HomeScreen(
     onRegisterClick: () -> Unit,
     onLoginClick: () -> Unit,
+    onSessionActive: () -> Unit,
     modifier: Modifier = Modifier,
+    sessionViewModel: SessionViewModel = viewModel(factory = TruePostViewModelProvider.Factory)
+) {
+    val session by sessionViewModel.session.collectAsState()
+
+    LaunchedEffect(Unit) {
+        sessionViewModel.loadCurrentSession(onSessionActive)
+    }
+
+    HomeScreenContent(
+        onRegisterClick = onRegisterClick,
+        onLoginClick = onLoginClick,
+        modifier = modifier
+    )
+}
+
+@Composable
+private fun HomeScreenContent(
+    onRegisterClick: () -> Unit,
+    onLoginClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Column(
         verticalArrangement = Arrangement.Center,
@@ -99,7 +126,7 @@ fun HomeScreen(
 @Composable
 fun HomeScreenPreview() {
     TruePostTheme {
-        HomeScreen(
+        HomeScreenContent(
             onRegisterClick = {},
             onLoginClick = {},
         )

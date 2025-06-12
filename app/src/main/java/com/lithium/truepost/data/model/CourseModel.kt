@@ -3,7 +3,7 @@ package com.lithium.truepost.data.model
 import androidx.annotation.DrawableRes
 
 data class CourseData(
-    val id: String,
+    val id: Int,
     @DrawableRes val imageResId: Int,
     val title: String,
     val description: String,
@@ -13,6 +13,6 @@ data class CourseData(
 
 data class CourseContent(
     val title: String,
-    val imageResId: Int,
     val text: String,
+    @DrawableRes val imageResId: Int? = null,
 )
