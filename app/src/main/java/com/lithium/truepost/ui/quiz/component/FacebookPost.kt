@@ -1,25 +1,16 @@
 package com.lithium.truepost.ui.quiz.component
 
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Favorite
@@ -40,8 +31,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lithium.truepost.data.model.FacebookPostModel
 import com.lithium.truepost.data.raw.AllFacebookPosts
+import com.lithium.truepost.ui.quiz.component.x.ImageGrid
 import com.lithium.truepost.ui.theme.TruePostTheme
-import kotlin.math.min
 
 @Composable
 fun FacebookPost(
@@ -55,7 +46,7 @@ fun FacebookPost(
                 text = post.content,
                 modifier = Modifier.padding(vertical = 4.dp)
             )
-            FacebookImageGrid(post.imagesResId)
+            ImageGrid(post.imagesResId)
             FaceBookPostFooter(post)
         }
     }
@@ -98,33 +89,6 @@ private fun FaceBookPostHeader(
             contentDescription = "Cerrar",
             modifier = Modifier.size(32.dp),
         )
-    }
-}
-
-@Composable
-fun FacebookImageGrid(
-    @DrawableRes images: List<Int>,
-    modifier: Modifier = Modifier
-) {
-    if (images.isEmpty()) return
-
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(min(images.size, 3)),
-        userScrollEnabled = false,
-        modifier = modifier
-            .fillMaxWidth()
-    ) {
-        items(images) { imageResId ->
-            Image(
-                painter = painterResource(imageResId),
-                contentDescription = null,
-                contentScale = ContentScale.Fit,
-                modifier = Modifier
-                    .aspectRatio(1f)
-                    .padding(1.dp)
-                    .fillMaxWidth()
-            )
-        }
     }
 }
 

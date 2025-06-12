@@ -1,21 +1,19 @@
 package com.lithium.truepost.ui.quiz.component.x
 
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.itemsIndexed
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -23,56 +21,60 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.lithium.truepost.R
 import com.lithium.truepost.ui.theme.TruePostTheme
 import kotlin.math.min
-import com.lithium.truepost.R
 
 @Composable
 fun ImageGrid(
-    @DrawableRes images: List<Int>,
+    images: List<Int>,
     modifier: Modifier = Modifier,
-    maxColumns: Int = 2,
-    maxRows: Int = 2,
-    cornerRadius: Int = 8,
+    columns: Int = 2,
+    rows: Int = 2,
 ) {
-    if (images.isEmpty()) return
-
-    val maxImages = maxColumns * maxRows
+    val maxColumns = min(columns, images.size)
+    val maxRows = min(rows, (images.size + columns - 1) / columns)
+    val maxImages = columns * rows
     val displayImages = images.take(maxImages)
-    val moreCount = images.size - maxImages
+    val remaining = images.size - maxImages
 
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(maxColumns),
-        modifier = modifier,
-    ) {
-        itemsIndexed(displayImages) { index, imageResId ->
-            Box(
-                modifier = Modifier
-                    .aspectRatio(1f)
-                    .padding(2.dp)
-                    .clip(RoundedCornerShape(cornerRadius.dp))
-            ) {
-                Image(
-                    painter = painterResource(imageResId),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize()
-                )
-                // Si es la última imagen visible y hay más, muestra overlay
-                if (index == displayImages.lastIndex && moreCount > 0) {
-                    Box(
-                        modifier = Modifier
-                            .matchParentSize()
-                            .background(Color(0x88000000))
-                            .clip(RoundedCornerShape(cornerRadius.dp)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "+$moreCount",
-                            color = Color.White,
-                            fontSize = 28.sp,
-                            fontWeight = FontWeight.Bold
-                        )
+    Column(modifier = modifier) {
+        for (row in 0 until maxRows) {
+            Row {
+                for (col in 0 until maxColumns) {
+                    val index = row * maxColumns + col
+                    if (index < displayImages.size) {
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .aspectRatio(1f)
+                                .padding(1.dp)
+                        ) {
+                            Image(
+                                painter = painterResource(displayImages[index]),
+                                contentDescription = null,
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop,
+                            )
+                            // Overlay +remaining en la última imagen visible
+                            if (index == displayImages.lastIndex && remaining > 0) {
+                                Box(
+                                    modifier = Modifier
+                                        .matchParentSize()
+                                        .background(Color(0x88000000)),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = "+$remaining",
+                                        color = Color.White,
+                                        fontSize = 28.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                            }
+                        }
+                    } else {
+                        Spacer(Modifier.weight(1f))
                     }
                 }
             }
@@ -94,9 +96,9 @@ fun ImageGridPreview() {
     TruePostTheme {
         ImageGrid(
             images = images,
-            maxColumns = 2,
-            maxRows = 2,
-            modifier = Modifier.fillMaxSize()
+            columns = 2,
+            rows = 2,
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }

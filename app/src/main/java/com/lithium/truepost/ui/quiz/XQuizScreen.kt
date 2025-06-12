@@ -1,7 +1,11 @@
 package com.lithium.truepost.ui.quiz
 
-import com.lithium.truepost.ui.quiz.component.FinalResult
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
@@ -16,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.lithium.truepost.data.raw.AllXTweets
 import com.lithium.truepost.ui.TruePostViewModelProvider
+import com.lithium.truepost.ui.quiz.component.FinalResult
 import com.lithium.truepost.ui.quiz.component.PauseMenu
 import com.lithium.truepost.ui.quiz.component.QuizHeader
 import com.lithium.truepost.ui.quiz.component.QuizInteraction
@@ -49,7 +54,10 @@ private fun XQuizScreenContent(
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxSize().padding(16.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState())
     ) {
         QuizHeader(
             remainingTime = uiState.remainingTime,
@@ -59,14 +67,15 @@ private fun XQuizScreenContent(
             pauseDisabled = uiState.pause || uiState.quizFinished,
             hintDisabled = uiState.pause || uiState.quizFinished || uiState.hintUsed,
         )
+
         Spacer(modifier = Modifier.height(16.dp))
-        Spacer(modifier = Modifier.weight(1f))
 
         when {
             uiState.pause -> {
                 PauseMenu(
                     onUnpauseClick = onUnpauseClick,
                     onExitClick = onExitClick,
+                    modifier = Modifier.weight(1F),
                 )
             }
             uiState.quizFinished -> {
@@ -75,22 +84,24 @@ private fun XQuizScreenContent(
                     incorrect = uiState.incorrect,
                     points = uiState.points,
                     onBackClick = onExitClick,
+                    modifier = Modifier.weight(1F),
                 )
             }
             else -> {
                 XTweet(
-                    uiState.tweets[uiState.questionIndex],
-                    modifier = Modifier
-                        .verticalScroll(rememberScrollState())
-                        .heightIn(max = 450.dp)
-                        .fillMaxWidth()
+                    tweet = uiState.tweets[uiState.questionIndex],
+                    modifier = Modifier.fillMaxWidth()
                 )
+
                 Spacer(modifier = Modifier.height(8.dp))
+
                 Text(
                     text = "Pregunta ${uiState.questionIndex + 1} de ${uiState.maxQuestions}",
                     style = MaterialTheme.typography.titleMedium
                 )
-                Spacer(modifier = Modifier.weight(1f))
+
+                Spacer(modifier = Modifier.height(16.dp))
+
                 QuizInteraction(
                     lastCorrect = uiState.lastAnswerWasCorrect,
                     animating = uiState.animating,
@@ -98,7 +109,8 @@ private fun XQuizScreenContent(
                 )
             }
         }
-        Spacer(modifier = Modifier.weight(1f))
+
+        Spacer(modifier = Modifier.height(32.dp))
     }
 }
 
@@ -128,6 +140,26 @@ fun XQuizScreenPausePreview() {
         tweets = AllXTweets,
         maxQuestions = 10,
         pause = true,
+    )
+    TruePostTheme {
+        XQuizScreenContent(
+            uiState = uiState,
+            onPauseClick = {},
+            onUnpauseClick = {},
+            onHintClick = {},
+            onResponseClick = {},
+            onExitClick = {},
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun XQuizScreenResultPreview() {
+    val uiState = XQuizUiState(
+        tweets = AllXTweets,
+        maxQuestions = 10,
+        quizFinished = true,
     )
     TruePostTheme {
         XQuizScreenContent(

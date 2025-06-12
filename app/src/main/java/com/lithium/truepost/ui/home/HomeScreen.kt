@@ -9,13 +9,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -27,7 +28,6 @@ import com.lithium.truepost.R
 import com.lithium.truepost.ui.TruePostViewModelProvider
 import com.lithium.truepost.ui.session.SessionViewModel
 import com.lithium.truepost.ui.theme.TruePostTheme
-import androidx.compose.runtime.getValue
 
 @Composable
 fun HomeScreen(
@@ -37,8 +37,6 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     sessionViewModel: SessionViewModel = viewModel(factory = TruePostViewModelProvider.Factory)
 ) {
-    val session by sessionViewModel.session.collectAsState()
-
     LaunchedEffect(Unit) {
         sessionViewModel.loadCurrentSession(onSessionActive)
     }
@@ -61,6 +59,7 @@ private fun HomeScreenContent(
         modifier = modifier
             .fillMaxSize()
             .padding(16.dp)
+            .verticalScroll(rememberScrollState())
     ) {
         Image(
             painter = painterResource(R.drawable.home),

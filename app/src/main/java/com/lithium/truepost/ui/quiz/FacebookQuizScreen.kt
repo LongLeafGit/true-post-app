@@ -1,14 +1,11 @@
 package com.lithium.truepost.ui.quiz
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -54,54 +51,65 @@ private fun FacebookQuizScreenContent(
     onResponseClick: (Boolean) -> Unit,
     onBackToMenu: () -> Unit,
 ) {
-    Column(
+    LazyColumn(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxSize().padding(16.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
     ) {
-        QuizHeader(
-            remainingTime = uiState.remainingTime,
-            maxTime = uiState.maxTime,
-            onPauseClick = { onPauseClick() },
-            onHintClick = if (uiState.hintUsed) ({}) else onHintClick,
-            pauseDisabled = uiState.pause || uiState.quizFinished,
-            hintDisabled = uiState.pause || uiState.quizFinished || uiState.hintUsed,
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Spacer(modifier = Modifier.weight(1f))
+        item {
+            QuizHeader(
+                remainingTime = uiState.remainingTime,
+                maxTime = uiState.maxTime,
+                onPauseClick = { onPauseClick() },
+                onHintClick = if (uiState.hintUsed) ({}) else onHintClick,
+                pauseDisabled = uiState.pause || uiState.quizFinished,
+                hintDisabled = uiState.pause || uiState.quizFinished || uiState.hintUsed,
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+        }
 
-        when {
-            uiState.pause -> {
-                PauseMenu(
-                    onUnpauseClick = onUnpauseClick,
-                    onExitClick = onBackToMenu
-                )
-            }
-            uiState.quizFinished -> {
-                FinalResult(
-                    correct = uiState.correct,
-                    incorrect = uiState.incorrect,
-                    points = uiState.points,
-                    onBackClick = onBackToMenu,
-                )
-            }
-            else -> {
-                FacebookPost(
-                    uiState.posts[uiState.questionIndex],
-                    modifier = Modifier
-                        .verticalScroll(rememberScrollState())
-                        .heightIn(max = 450.dp)
-                        .fillMaxWidth()
-                )
-                Text(
-                    text = "Pregunta ${uiState.questionIndex + 1} de ${uiState.maxQuestions}",
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Spacer(modifier = Modifier.weight(1F))
-                QuizInteraction(uiState.lastAnswerWasCorrect, animating = uiState.animating, onResponseClick)
+        item {
+            when {
+                uiState.pause -> {
+                    PauseMenu(
+                        onUnpauseClick = onUnpauseClick,
+                        onExitClick = onBackToMenu,
+                        modifier = Modifier
+                    )
+                }
+                uiState.quizFinished -> {
+                    FinalResult(
+                        correct = uiState.correct,
+                        incorrect = uiState.incorrect,
+                        points = uiState.points,
+                        onBackClick = onBackToMenu,
+                        modifier = Modifier
+                    )
+                }
+                else -> {
+                    FacebookPost(
+                        post = uiState.posts[uiState.questionIndex],
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "Pregunta ${uiState.questionIndex + 1} de ${uiState.maxQuestions}",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    QuizInteraction(
+                        lastCorrect = uiState.lastAnswerWasCorrect,
+                        animating = uiState.animating,
+                        onResponseClick = onResponseClick
+                    )
+                }
             }
         }
-        Spacer(modifier = Modifier.weight(1f))
-        Spacer(modifier = Modifier.height(16.dp))
+
+        item {
+            Spacer(modifier = Modifier.height(32.dp))
+        }
     }
 }
 
